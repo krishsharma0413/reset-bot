@@ -1,10 +1,11 @@
 # reset-bot
 
+
+<img src="https://cdn.discordapp.com/attachments/980037150429048923/985261189393174548/banner.png">
+
 **WIP**
-
-<!-- show banner here -->
-
 <hr>
+
 
 # COMMANDS
 

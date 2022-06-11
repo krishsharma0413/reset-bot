@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "reset-bot"
+version = "0.1.0"
+description = "A discord bot"
+authors = ["ResetXD <resetwastakenwastaken@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+py-cord = "^1.7.3"
+
+[tool.poetry.dev-dependencies]
+aiohttp = "^3.8.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
