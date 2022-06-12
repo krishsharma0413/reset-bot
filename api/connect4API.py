@@ -59,11 +59,11 @@ def current_board(board):
         for y in x:
             y = int(y)
             if y == 0:
-                des += "⚪"
+                des += "<:c4_emp:985511014051246221>"
             elif y == 1:
-                des += "🔴"
+                des += "<:c4_red:985511284504162334>"
             else:
-                des += "🟡"
+                des += "<:c4_yellow:985511342796587029>"
         des += "\n"
     des += "1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣"
     return des

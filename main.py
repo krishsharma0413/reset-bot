@@ -2,6 +2,7 @@ import disnake
 from disnake.ext import commands
 from dotenv import load_dotenv
 import os
+import motor.motor_asyncio
 
 load_dotenv("tokens.env")
 
@@ -14,6 +15,10 @@ client = commands.Bot(
     test_guilds=[885836332855881728, 651209882531266570],
     reload=True
 )
+
+database = motor.motor_asyncio.AsyncIOMotorClient(os.environ["database_link"])
+database = database["economy"]
+client.database = database
 
 @client.event
 async def on_ready():

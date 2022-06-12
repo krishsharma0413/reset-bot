@@ -1,1 +1,3 @@
 git+https://github.com/DisnakeDev/disnake/
+motor
+dnspython
