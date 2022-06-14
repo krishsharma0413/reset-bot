@@ -12,7 +12,7 @@ intents = disnake.Intents.default()
 client = commands.Bot(
     command_prefix=commands.when_mentioned_or("resbot "),
     intents=intents,
-    test_guilds=[885836332855881728, 651209882531266570],
+    test_guilds=[885836332855881728, 651209882531266570, 915655393546481686],
     reload=True
 )
 

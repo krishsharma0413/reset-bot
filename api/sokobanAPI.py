@@ -172,6 +172,11 @@ def create(level):
     else:
         return levels[level]
 
+def all()->dict:
+    with open("./asset/levels.json", "r") as f:
+        levels = json.load(f)
+    return levels
+
 def add(name, custom_creator):
     with open("./asset/levels.json", "r") as f:
         levels = json.load(f)

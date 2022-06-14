@@ -110,8 +110,6 @@ class SOkobanButton(disnake.ui.View):
         await msg.edit(embed=self.inter.embed)
         return
 
-
-
 class SokobanCreatorButton(disnake.ui.View):
     def __init__(self, inter):
         super().__init__(timeout=None)
@@ -123,6 +121,8 @@ class SokobanCreatorButton(disnake.ui.View):
             return await inter.send("you are not creator of this game.",ephemeral=True)
         self.inter.embed.description += "⬜"
         self.inter.game += "1"
+        self.inter.last = "wall"
+        self.inter.embed.set_footer(text=f"last operation: {self.inter.last}")
         await inter.response.defer()
         msg  = await inter.original_message()
         await msg.edit(embed=self.inter.embed)
@@ -134,6 +134,8 @@ class SokobanCreatorButton(disnake.ui.View):
             return await inter.send("you are not creator of this game.",ephemeral=True)
         self.inter.embed.description += "⬛"
         self.inter.game += "0"
+        self.inter.last = "empty"
+        self.inter.embed.set_footer(text=f"last operation: {self.inter.last}")
         await inter.response.defer()
         msg  = await inter.original_message()
         await msg.edit(embed=self.inter.embed)
@@ -145,6 +147,8 @@ class SokobanCreatorButton(disnake.ui.View):
             return await inter.send("you are not creator of this game.",ephemeral=True)
         self.inter.embed.description += "🟩"
         self.inter.game += "4"
+        self.inter.last = "goal"
+        self.inter.embed.set_footer(text=f"last operation: {self.inter.last}")
         await inter.response.defer()
         msg  = await inter.original_message()
         await msg.edit(embed=self.inter.embed)
@@ -156,6 +160,8 @@ class SokobanCreatorButton(disnake.ui.View):
             return await inter.send("you are not creator of this game.",ephemeral=True)
         self.inter.embed.description += "🟫"
         self.inter.game += "3"
+        self.inter.last = "box"
+        self.inter.embed.set_footer(text=f"last operation: {self.inter.last}")
         await inter.response.defer()
         msg  = await inter.original_message()
         await msg.edit(embed=self.inter.embed)
@@ -167,6 +173,8 @@ class SokobanCreatorButton(disnake.ui.View):
             return await inter.send("you are not creator of this game.",ephemeral=True)
         self.inter.embed.description += "😔"
         self.inter.game += "2"
+        self.inter.last = "player"
+        self.inter.embed.set_footer(text=f"last operation: {self.inter.last}")
         await inter.response.defer()
         msg  = await inter.original_message()
         await msg.edit(embed=self.inter.embed)
@@ -178,6 +186,8 @@ class SokobanCreatorButton(disnake.ui.View):
             return await inter.send("you are not creator of this game.",ephemeral=True)
         self.inter.embed.description += "\n"
         self.inter.game += "/"
+        self.inter.last = "down"
+        self.inter.embed.set_footer(text=f"last operation: {self.inter.last}")
         await inter.response.defer()
         msg  = await inter.original_message()
         await msg.edit(embed=self.inter.embed)
@@ -205,6 +215,48 @@ class SokobanCreatorButton(disnake.ui.View):
         msg  = await inter.original_message()
         self.inter.embed.set_footer(text="map complete.")
         await msg.edit(embed=self.inter.embed,view=None)
+
+
+class SokobanSelectorButton(disnake.ui.View):
+    def __init__(self, inter):
+        super().__init__(timeout=None)
+        self.inter = inter
+
+    @disnake.ui.button(emoji="⬅️")
+    async def left_button(self, button: disnake.ui.Button, inter:disnake.MessageInteraction):
+        if inter.author.id != self.inter.author.id:
+            return await inter.send("get your own level selector.",ephemeral=True)
+        level_list = self.inter.level_list
+        levels = self.inter.levels
+        self.inter.selected -=1
+        embed = disnake.Embed(title=f"Sokoban levels selector: {level_list[self.inter.selected]}")
+        game = sokobanAPI.create(level_list[self.inter.selected])
+        game["map"] = sokobanAPI.raw_creator(game["map"])
+        game = sokobanAPI.analyse(game)
+        embed.description = sokobanAPI.render_perm(game)
+        embed.set_footer(text=f"made by: {game['author']} | {game['played']} plays")
+        await inter.response.defer()
+        msg  = await inter.original_message()
+        await msg.edit(embed=embed)
+
+
+    @disnake.ui.button(emoji="➡️")
+    async def right_button(self, button: disnake.ui.Button, inter:disnake.MessageInteraction):
+        if inter.author.id != self.inter.author.id:
+            return await inter.send("get your own level selector.",ephemeral=True)
+        level_list = self.inter.level_list
+        levels = self.inter.levels
+        self.inter.selected += 1
+        embed = disnake.Embed(title=f"Sokoban levels selector: {level_list[self.inter.selected]}")
+        game = sokobanAPI.create(level_list[self.inter.selected])
+        game["map"] = sokobanAPI.raw_creator(game["map"])
+        game = sokobanAPI.analyse(game)
+        embed.description = sokobanAPI.render_perm(game)
+        embed.set_footer(text=f"made by: {game['author']} | {game['played']} plays")
+        await inter.response.defer()
+        msg  = await inter.original_message()
+        await msg.edit(embed=embed)
+
 
 class Sokoban(commands.Cog):
     def __init__(self, client):
@@ -241,7 +293,20 @@ class Sokoban(commands.Cog):
         """
         Level selector for sokoban.
         """
-        return await inter.send("todo")
+        await inter.response.defer()
+        levels = sokobanAPI.all()
+        level_list = list(levels.keys())
+        selected = 0
+        inter.levels = levels
+        inter.level_list = level_list
+        inter.selected = selected
+        embed = disnake.Embed(title=f"Sokoban levels selector: {level_list[selected]}")
+        game = sokobanAPI.create(level_list[selected])
+        game["map"] = sokobanAPI.raw_creator(game["map"])
+        game = sokobanAPI.analyse(game)
+        embed.description = sokobanAPI.render_perm(game)
+        embed.set_footer(text=f"made by: {game['author']} | {game['played']} plays")
+        await inter.edit_original_message(embed=embed, view=SokobanSelectorButton(inter))
 
     @sokoban_game.sub_command(name="info")
     async def sokoban_game_selector(self,inter:disnake.ApplicationCommandInteraction, level:str):
@@ -263,6 +328,10 @@ class Sokoban(commands.Cog):
 
         """
         await inter.response.defer()
+        if len(name) < 3:
+            await inter.edit_original_message(content="name too short.")
+            return
+
         if not sokobanAPI.name_checker(name):
             await inter.edit_original_message(content="name is not valid.")
             return
@@ -270,6 +339,7 @@ class Sokoban(commands.Cog):
         inter.game = ""
         inter.embed = embed
         inter.name = name
+        inter.last = "none"
         await inter.edit_original_message(embed=embed, view=SokobanCreatorButton(inter))
 
 def setup(client):
