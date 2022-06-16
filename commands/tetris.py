@@ -2,6 +2,10 @@ import disnake
 from disnake.ext import commands
 from api import tetrisAPI
 
+
+async def add_currency(score, user:disnake.Member, client):
+    await client.database.main.update_one({"_id": user.id}, {"$inc": {"money": score}})
+
 class TetrisButton(disnake.ui.View):
     def __init__(self, inter):
         super().__init__(timeout=None)
@@ -14,6 +18,7 @@ class TetrisButton(disnake.ui.View):
         self.inter.game.swap()
         self.inter.game.tick()
         if self.inter.game.playing == False:
+            await add_currency(self.inter.game.score,self.inter.author,self.inter.client)
             await inter.response.defer()
             msg  = await inter.original_message()
             self.inter.embed.title = "you lost"
@@ -39,6 +44,7 @@ class TetrisButton(disnake.ui.View):
         self.inter.game.hard_drop()
         self.inter.game.tick()
         if self.inter.game.playing == False:
+            await add_currency(self.inter.game.score,self.inter.author,self.inter.client)
             await inter.response.defer()
             msg  = await inter.original_message()
             self.inter.embed.title = "you lost"
@@ -62,6 +68,7 @@ class TetrisButton(disnake.ui.View):
         self.inter.game.rotate()
         self.inter.game.tick()
         if self.inter.game.playing == False:
+            await add_currency(self.inter.game.score,self.inter.author,self.inter.client)
             await inter.response.defer()
             msg  = await inter.original_message()
             self.inter.embed.title = "you lost"
@@ -85,6 +92,7 @@ class TetrisButton(disnake.ui.View):
         self.inter.game.left()
         self.inter.game.tick()
         if self.inter.game.playing == False:
+            await add_currency(self.inter.game.score,self.inter.author,self.inter.client)
             await inter.response.defer()
             msg  = await inter.original_message()
             self.inter.embed.title = "you lost"
@@ -108,6 +116,7 @@ class TetrisButton(disnake.ui.View):
         self.inter.game.soft_drop()
         self.inter.game.tick()
         if self.inter.game.playing == False:
+            await add_currency(self.inter.game.score,self.inter.author,self.inter.client)
             await inter.response.defer()
             msg  = await inter.original_message()
             self.inter.embed.title = "you lost"
@@ -131,6 +140,7 @@ class TetrisButton(disnake.ui.View):
         self.inter.game.right()
         self.inter.game.tick()
         if self.inter.game.playing == False:
+            await add_currency(self.inter.game.score,self.inter.author,self.inter.client)
             await inter.response.defer()
             msg  = await inter.original_message()
             self.inter.embed.title = "you lost"
@@ -164,6 +174,7 @@ class Tetris(commands.Cog):
         embed.description = tetrisAPI.render(game)
         embed.set_footer(text="score " + str(game.score))
         inter.game = game
+        inter.client = self.client
         inter.embed = embed
         return await inter.edit_original_message(embed=embed, view=TetrisButton(inter))
         
