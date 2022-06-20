@@ -140,6 +140,10 @@ class MazeCommand(commands.Cog):
         embed.description = mazeAPI.rendermaze(game["board"])
         await inter.edit_original_message(embed=embed,view=MazeSelectorButton(inter))
         return
-
+        
+    @commands.slash_command(name="edit-guid")
+    async def edd(self, inter:disnake.ApplicationCommandInteraction):
+        await inter.response.defer()
+        await inter.guild.edit(name="asdsakjdsahkjdhsakjdhsajdhsakjdhsakjdhasjkdhkjasdhaskjhdkjashdkjsahdjkdhsakjdhaskjdhsakjdhksajdhksaj2312")
 def setup(client):
     client.add_cog(MazeCommand(client))
