@@ -17,8 +17,10 @@ client = commands.Bot(
 )
 
 database = motor.motor_asyncio.AsyncIOMotorClient(os.environ["database_link"])
+smashdatabase = database["smashpass"]
 database = database["economy"]
 client.database = database
+client.smashdb = smashdatabase
 
 @client.event
 async def on_ready():
